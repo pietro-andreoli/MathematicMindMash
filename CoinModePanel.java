@@ -1,6 +1,9 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
@@ -8,12 +11,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 public class CoinModePanel extends JPanel {
+	Font menuFont=new Font("Helvetica", Font.BOLD, 24);//font on the menu
 	BufferedImage instructionScreen;
 	BufferedImage startButton;
 	Rectangle startButtonRect = new Rectangle(212, 580, 75, 75);
@@ -35,6 +41,7 @@ public class CoinModePanel extends JPanel {
 	Ellipse2D.Double dimeEllipse = new Ellipse2D.Double(339, 605, 50, 50);
 	
 	BufferedImage moniesCount;
+	BufferedImage correctSymbol;
 	ArrayList<Money> cash20List = new ArrayList<Money>();
 	ArrayList<Money> cash10List = new ArrayList<Money>();
 	ArrayList<Money> cash5List = new ArrayList<Money>();
@@ -45,6 +52,16 @@ public class CoinModePanel extends JPanel {
 	ArrayList<Money> dimeList = new ArrayList<Money>();
 	boolean gameState = false;
 
+	double playersChange=0;
+	double expectedChange=0;
+	double cost=0;
+	double moneyGiven=0;
+	
+	Timer countDown;
+	int countDownState=3;
+	Timer backGroundChange;
+	boolean isCorrect=false;
+	
 	public CoinModePanel() {
 		
 			
@@ -60,11 +77,60 @@ public class CoinModePanel extends JPanel {
 			nickel = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/MoneyPics/nickel.png"));
 			dime = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/MoneyPics/dime.png"));
 			moniesCount = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/MoneyPics/CurrentNumberOfMonies.png"));
+			correctSymbol = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/CoinModePics/correctpic.png"));
 
 		} catch (IOException ex) {
 			System.out.println(ex);
 		}
 		repaint();
+		
+		class StartTime3 implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				countDownState-=1;
+				repaint();
+
+			}
+		}
+		  final Timer countDown3 = new Timer(1000, new StartTime3());
+		  countDown3.setRepeats(false);
+		class StartTime2 implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				countDownState-=1;
+				repaint();
+				countDown3.start();
+			}
+		}
+	  	final Timer countDown2 = new Timer(1000, new StartTime2());
+		  countDown2.setRepeats(false);
+		class StartTime1 implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				countDownState-=1;
+				repaint();
+				countDown2.start();
+			}
+		}
+		  countDown = new Timer(1000, new StartTime1());
+		  countDown.setRepeats(false);
+		  
+		  class BackgroundChangeTimer implements ActionListener {
+				public void actionPerformed(ActionEvent e) {
+					isCorrect=false;
+					cash20List.clear();
+					cash10List.clear();
+					cash5List.clear();
+					toonieList.clear();
+					loonieList.clear();
+					quarterList.clear();
+					nickelList.clear();
+					dimeList.clear();
+					generateScenario();
+					playersChange=0;
+					repaint();
+				}
+			}
+			  backGroundChange = new Timer(1000, new BackgroundChangeTimer());
+			  backGroundChange.setRepeats(false);
+			  
 		class buttonClickListener implements MouseListener {
 
 			public void mouseClicked(MouseEvent event) {
@@ -72,19 +138,18 @@ public class CoinModePanel extends JPanel {
 				int clickX = event.getX(),
 
 				clickY = event.getY();
-				System.out.println(clickX + ", " +clickY);
+				System.out.println("Players Change: "+playersChange+"\n Expected Change: "+expectedChange);
 				
 				
 
 				if (SwingUtilities.isLeftMouseButton(event)) {
-
-					if (startButtonRect != null &&
-
-					startButtonRect.contains(clickX, clickY)) {
+					
+					if (startButtonRect != null && startButtonRect.contains(clickX, clickY)) {
 						System.out.println("start");
 						startButtonRect=null;
 						gameState = true;
-						
+						countDown.start();
+						generateScenario();
 						repaint();
 					} else if (cash20Rect.contains(clickX, clickY)) {
 						
@@ -93,6 +158,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(27, 1000);
 						cash20List.add(temp);
+						playersChange+=20;
 						repaint();
 						
 					} else if (cash10Rect.contains(clickX, clickY)) {
@@ -102,6 +168,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(184, 1000);
 						cash10List.add(temp);
+						playersChange+=10;
 						repaint();
 						
 					} else if (cash5Rect.contains(clickX, clickY)) {
@@ -110,6 +177,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(341, 1000);
 						cash5List.add(temp);
+						playersChange+=5;
 						repaint();
 					} else if (toonieEllipse.contains(clickX, clickY)) {
 						System.out.println("2");
@@ -117,6 +185,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(50, 1000);
 						toonieList.add(temp);
+						playersChange+=2;
 						repaint();
 					} else if (loonieEllipse.contains(clickX, clickY)) {
 						System.out.println("1");
@@ -124,6 +193,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 						temp.setLocation(126, 1000);
 						loonieList.add(temp);
+						playersChange+=1;
 						repaint();
 					} else if (quarterEllipse.contains(clickX, clickY)) {
 						System.out.println("0.25");
@@ -131,6 +201,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(202, 1000);
 						quarterList.add(temp);
+						playersChange+=0.25;
 						repaint();
 					} else if (nickelEllipse.contains(clickX, clickY)) {
 						System.out.println("0.05");
@@ -138,6 +209,7 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(278, 1000);
 						nickelList.add(temp);
+						playersChange+=0.05;
 						repaint();
 					} else if (dimeEllipse.contains(clickX, clickY)) {
 						System.out.println("0.10");
@@ -145,58 +217,76 @@ public class CoinModePanel extends JPanel {
 						if(temp.yPos >= 450)
 							temp.setLocation(354, 1000);
 						dimeList.add(temp);
+						playersChange+=0.1;
 						repaint();
 					}
 					
 					for(Money list20 : cash20List){
 						if(list20.bodyR.contains(clickX, clickY)){
 							cash20List.remove(cash20List.size()-1);
+							playersChange-=20;
 							repaint();
 						}
 					}
 					for(Money list10 : cash10List){
 						if(list10.bodyR.contains(clickX, clickY)){
 							cash10List.remove(cash10List.size()-1);
+							playersChange-=10;
 							repaint();
 						}
 					}
 					for(Money list5 : cash5List){
 						if(list5.bodyR.contains(clickX, clickY)){
 							cash5List.remove(cash5List.size()-1);
+							playersChange-=5;
 							repaint();
 						}
 					}
 					for(Money listToonie : toonieList){
 						if(listToonie.bodyE.contains(clickX, clickY)){
 							toonieList.remove(toonieList.size()-1);
+							playersChange-=2;
 							repaint();
 						}
 					}
 					for(Money listLoonie : loonieList){
 						if(listLoonie.bodyE.contains(clickX, clickY)){
 							loonieList.remove(loonieList.size()-1);
+							playersChange-=1;
 							repaint();
 						}
 					}
 					for(Money list : quarterList){
 						if(list.bodyE.contains(clickX, clickY)){
 							quarterList.remove(quarterList.size()-1);
+							playersChange-=0.25;
 							repaint();
 						}
 					}
 					for(Money list : nickelList){
 						if(list.bodyE.contains(clickX, clickY)){
 							nickelList.remove(nickelList.size()-1);
+							playersChange-=0.05;
 							repaint();
 						}
 					}
 					for(Money list : dimeList){
 						if(list.bodyE.contains(clickX, clickY)){
 							dimeList.remove(dimeList.size()-1);
+							playersChange-=0.1;
 							repaint();
 						}
 					}
+					if(Math.abs(playersChange-expectedChange) <= 0.05){
+						System.out.println("Correct!");
+						isCorrect=true;
+						backGroundChange.start();
+						repaint();
+					}
 				}
+				System.out.println("Players Change: "+playersChange+"\n Expected Change: "+expectedChange);
+				
+				
 			}
 
 			public void mouseEntered(MouseEvent arg0) {
@@ -229,8 +319,17 @@ public class CoinModePanel extends JPanel {
 		if (!gameState) {
 			g.drawImage(instructionScreen, 0, 0, null);
 			g.drawImage(startButton, 175, 580, null);
-		} else if (gameState) {
-			
+		} else if(countDownState>0){
+			menuFont = new Font("Helvetica", Font.BOLD, 120);
+			g.setFont(menuFont);
+			g.drawString(""+countDownState, 220, 350);
+		}
+		else if (gameState) {
+			menuFont = new Font("Helvetica", Font.BOLD, 20);
+			g.setFont(menuFont);
+			g.drawString("$"+ playersChange, 200, 200);
+			g.drawString("Cost:"+cost, 50, 50);
+			g.drawString("Money Given:"+moneyGiven, 200, 50);
 			g.drawImage(cash20, 27, 520, null); 
 			g.drawImage(cash10, 184, 520, null); 
 			g.drawImage(cash5, 341, 520,null); 
@@ -239,14 +338,8 @@ public class CoinModePanel extends JPanel {
 			g.drawImage(quarter, 202, 610, null);
 			g.drawImage(nickel, 278, 615, null); 
 			g.drawImage(dime, 354, 620,null);
-			if(cash20List.size()>1){
-				g.drawImage(moniesCount, 95, 220, null);
-				g.setColor(Color.WHITE);
-				g.drawString("x"+cash20List.size(), 110, 244);
-			}
-				
-		}
-		
+			if(isCorrect)
+				g.drawImage(correctSymbol, 100, 100, null);
 		for (Money list : cash20List) {
 				g.drawImage(cash20, list.xPos,list.yPos, null);
 		}
@@ -271,6 +364,34 @@ public class CoinModePanel extends JPanel {
 		for(Money list : dimeList){
 			g.drawImage(dime, list.xPos,list.yPos, null);
 		}
+			
+				
+		}
+		
+		
 
+	}
+
+	public String getCurrChange() {
+		double amount = 0;
+		amount= cash20List.size()*20 + cash10List.size()*10+cash5List.size()*5+toonieList.size()*2+loonieList.size()*+quarterList.size()*0.25+nickelList.size()*0.05+dimeList.size()*0.1;
+		return ""+amount;
+	}
+	public void generateScenario(){
+		Random rand = new Random();
+		//Generating moneyGiven
+		moneyGiven=1+(45-1)*rand.nextDouble();
+		moneyGiven=moneyGiven*10;
+		moneyGiven=Math.round(moneyGiven);
+		moneyGiven=moneyGiven/10;
+		//Generating cost
+		cost = 1 + (moneyGiven - 1) * rand.nextDouble();
+		cost=cost*10;
+		cost=Math.round(cost);
+		cost=cost/10;
+		System.out.println(cost);
+		
+		
+		expectedChange=moneyGiven-cost;
 	}
 }

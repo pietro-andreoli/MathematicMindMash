@@ -59,8 +59,14 @@ public class Money {
 	public void setLocation(int x, int y){
 		this.xPos=x;
 		this.yPos=y;
-		this.bodyR.x=x;
-		this.bodyR.y=y;
+		if (this.value == 20 || this.value == 10 || this.value == 5){
+			this.bodyR.x=x;
+			this.bodyR.y=y;
+		}
+		else if (this.value == 1 || this.value == 2 || this.value == 0.25 || this.value == 0.05 || this.value == 0.1){
+			this.bodyE.x=x;
+			this.bodyE.y=y;
+		}
 	}
 
 	public void draw(Graphics2D g2) {
