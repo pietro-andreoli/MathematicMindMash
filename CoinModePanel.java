@@ -61,7 +61,11 @@ public class CoinModePanel extends JPanel {
 	int countDownState=3;
 	Timer backGroundChange;
 	boolean isCorrect=false;
-	
+	int attempts=0;
+	double currAttemptTime=0;
+	double averageTime=0;
+	double attemptStartTime=0;
+	private Timer repaintTimer;
 	public CoinModePanel() {
 		
 			
@@ -112,6 +116,17 @@ public class CoinModePanel extends JPanel {
 		  countDown = new Timer(1000, new StartTime1());
 		  countDown.setRepeats(false);
 		  
+		  class RepaintTimer implements ActionListener {
+
+				public void actionPerformed(ActionEvent e) {
+					repaint();
+				}
+
+			}
+			//adds the timer and starts the timer
+			 repaintTimer = new Timer(1, new RepaintTimer());
+			repaintTimer.start();
+		  
 		  class BackgroundChangeTimer implements ActionListener {
 				public void actionPerformed(ActionEvent e) {
 					isCorrect=false;
@@ -134,14 +149,8 @@ public class CoinModePanel extends JPanel {
 		class buttonClickListener implements MouseListener {
 
 			public void mouseClicked(MouseEvent event) {
-				System.out.println("ayy");
-				int clickX = event.getX(),
-
-				clickY = event.getY();
-				System.out.println("Players Change: "+playersChange+"\n Expected Change: "+expectedChange);
+				int clickX = event.getX(), clickY = event.getY();
 				
-				
-
 				if (SwingUtilities.isLeftMouseButton(event)) {
 					
 					if (startButtonRect != null && startButtonRect.contains(clickX, clickY)) {
@@ -281,11 +290,20 @@ public class CoinModePanel extends JPanel {
 						System.out.println("Correct!");
 						isCorrect=true;
 						backGroundChange.start();
+						if(attempts>0){
+						averageTime=((((System.currentTimeMillis()-attemptStartTime)/1000)+averageTime)/attempts);
+							}
+						attempts++;
+						attemptStartTime=System.currentTimeMillis();
 						repaint();
 					}
 				}
 				System.out.println("Players Change: "+playersChange+"\n Expected Change: "+expectedChange);
-				
+				/*playersChange=playersChange*100;
+				playersChange=Math.round(playersChange);
+				playersChange=playersChange/100;
+				*/
+				System.out.println("ayy");
 				
 			}
 
@@ -325,11 +343,19 @@ public class CoinModePanel extends JPanel {
 			g.drawString(""+countDownState, 220, 350);
 		}
 		else if (gameState) {
+			if(attempts==0){
+				attemptStartTime=System.currentTimeMillis();
+				attempts++;
+			}
 			menuFont = new Font("Helvetica", Font.BOLD, 20);
 			g.setFont(menuFont);
 			g.drawString("$"+ playersChange, 200, 200);
-			g.drawString("Cost:"+cost, 50, 50);
-			g.drawString("Money Given:"+moneyGiven, 200, 50);
+			g.drawString("Cost: $"+cost, 100, 90);
+			g.drawString("Given: $"+moneyGiven, 250, 90);
+			menuFont = new Font("Helvetica", Font.BOLD, 12);
+			g.setFont(menuFont);
+			g.drawString("Time: "+(System.currentTimeMillis()-attemptStartTime)/1000, 5 ,15);
+			g.drawString("Average Time: "+averageTime, 370, 15);
 			g.drawImage(cash20, 27, 520, null); 
 			g.drawImage(cash10, 184, 520, null); 
 			g.drawImage(cash5, 341, 520,null); 

@@ -1,12 +1,14 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -26,8 +28,9 @@ public class MainMenu extends JPanel {
 
 	public MainMenu() {
 		try {
+			//titleScreenImage = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/MainMenu.png"));
 			titleScreenImage = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/MainMenu.png"));
-			settingsIcon = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/Settings.png"));
+			//settingsIcon = ImageIO.read(getClass().getResource("/MainMenu.png"));
 			coinModeButton = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/CoinModeButton.png"));
 			addSubtractModeButton = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/AddSubtractModeButtonWIP.png"));
 			multiplyDivideModeButton = ImageIO.read(new File("C:/Users/Peter/workspace/Math Game/src/MultiplyDivideModeButtonWIP.png"));
@@ -61,7 +64,7 @@ public class MainMenu extends JPanel {
 				}
 				// user clicks on the add/subtract mode
 				else if (addSubtractModeRect.contains(clickX, clickY)) {
-					System.out.println("addsubract");
+					/*System.out.println("addsubract");
 					GameFrame.addSubtractPanel.setBackground(Color.WHITE);
 					GameFrame.addSubtractPanel.setLayout(null);
 					GameFrame.frame.remove(GameFrame.mainMenu);
@@ -73,9 +76,15 @@ public class MainMenu extends JPanel {
 					GameFrame.frame.repaint();
 					GameFrame.addSubtractPanel.repaint();
 					repaint();
+					*/
+					Toolkit.getDefaultToolkit().beep();
+					String message="This Game Mode is not Ready Yet! Sorry :(";
+					JOptionPane.showMessageDialog(new JFrame(), message, "Whoops!",
+					        JOptionPane.ERROR_MESSAGE);
 				}
 				// user clicks on the multiply divide mode
 				else if (multiplyDivideModeRect.contains(clickX, clickY)) {
+					/*
 					System.out.println("multiplydivide");
 					GameFrame.multiplyDividePanel.setBackground(Color.WHITE);
 					GameFrame.multiplyDividePanel.setLayout(null);
@@ -88,9 +97,15 @@ public class MainMenu extends JPanel {
 					GameFrame.frame.repaint();
 					GameFrame.multiplyDividePanel.repaint();
 					repaint();
+					*/
+					Toolkit.getDefaultToolkit().beep();
+					String message="This Game Mode is not Ready Yet! Sorry :(";
+					JOptionPane.showMessageDialog(new JFrame(), message, "Whoops!",
+					        JOptionPane.ERROR_MESSAGE);
 				}
 				// user clicks on the speed mode
 				else if (speedModeRect.contains(clickX, clickY)) {
+					/*
 					System.out.println("speed");
 					GameFrame.speedPanel.setBackground(Color.WHITE);
 					GameFrame.speedPanel.setLayout(null);
@@ -103,6 +118,11 @@ public class MainMenu extends JPanel {
 					GameFrame.frame.repaint();
 					GameFrame.speedPanel.repaint();
 					repaint();
+					*/
+					Toolkit.getDefaultToolkit().beep();
+					String message="This Game Mode is not Ready Yet! Sorry :(";
+					JOptionPane.showMessageDialog(new JFrame(), message, "Whoops!",
+					        JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
